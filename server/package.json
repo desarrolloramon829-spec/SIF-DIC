@@ -1,0 +1,35 @@
+{
+  "name": "sif-tuc-server",
+  "version": "1.0.0",
+  "description": "API REST - Sistema de Información Fluvial de Tucumán",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "kill-port": "powershell -Command \"try { Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001 -ErrorAction Stop).OwningProcess -Force; Write-Host 'Puerto 3001 liberado' } catch { Write-Host 'Puerto 3001 ya libre' }\"",
+    "migrate": "ts-node src/scripts/migrate.ts",
+    "seed": "ts-node src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^20.14.0",
+    "@types/pg": "^8.11.6",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.0"
+  }
+}

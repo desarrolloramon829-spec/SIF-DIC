@@ -1,0 +1,223 @@
+{
+  "type": "FeatureCollection",
+  "name": "Ríos de Tucumán",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Salí", "tipo": "río principal" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.36, -26.58],
+          [-65.32, -26.62],
+          [-65.28, -26.66],
+          [-65.25, -26.7],
+          [-65.23, -26.74],
+          [-65.21, -26.78],
+          [-65.205, -26.8],
+          [-65.204, -26.817],
+          [-65.2, -26.84],
+          [-65.19, -26.87],
+          [-65.17, -26.9],
+          [-65.15, -26.94],
+          [-65.13, -26.98],
+          [-65.11, -27.02],
+          [-65.09, -27.06],
+          [-65.07, -27.1],
+          [-65.05, -27.15]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Lules", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.55, -26.88],
+          [-65.51, -26.89],
+          [-65.47, -26.9],
+          [-65.43, -26.91],
+          [-65.39, -26.92],
+          [-65.36, -26.925],
+          [-65.338, -26.93],
+          [-65.3, -26.94],
+          [-65.26, -26.945],
+          [-65.22, -26.93],
+          [-65.19, -26.92]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Famaillá", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.58, -27.0],
+          [-65.54, -27.01],
+          [-65.5, -27.02],
+          [-65.46, -27.035],
+          [-65.42, -27.045],
+          [-65.402, -27.052],
+          [-65.38, -27.06],
+          [-65.34, -27.07],
+          [-65.3, -27.075],
+          [-65.25, -27.08]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Gastona", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.75, -27.28],
+          [-65.72, -27.29],
+          [-65.68, -27.31],
+          [-65.64, -27.32],
+          [-65.59, -27.34],
+          [-65.55, -27.35],
+          [-65.51, -27.36],
+          [-65.46, -27.365]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Medina", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.6, -27.12],
+          [-65.56, -27.13],
+          [-65.52, -27.14],
+          [-65.48, -27.15],
+          [-65.44, -27.16],
+          [-65.4, -27.165],
+          [-65.35, -27.17]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nombre": "Río Chico (Monteros)",
+        "tipo": "río secundario"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.65, -27.16],
+          [-65.61, -27.17],
+          [-65.57, -27.18],
+          [-65.53, -27.19],
+          [-65.49, -27.2],
+          [-65.45, -27.21],
+          [-65.4, -27.215]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Marapa", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.62, -27.4],
+          [-65.58, -27.42],
+          [-65.52, -27.44],
+          [-65.46, -27.45],
+          [-65.4, -27.46],
+          [-65.34, -27.47]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Graneros", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.5, -27.5],
+          [-65.46, -27.51],
+          [-65.42, -27.52],
+          [-65.38, -27.53],
+          [-65.34, -27.535]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Embalse El Cadillal", "tipo": "embalse" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-65.23, -26.61],
+            [-65.22, -26.615],
+            [-65.205, -26.62],
+            [-65.195, -26.63],
+            [-65.2, -26.64],
+            [-65.21, -26.645],
+            [-65.225, -26.64],
+            [-65.235, -26.63],
+            [-65.24, -26.62],
+            [-65.23, -26.61]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Dique Escaba", "tipo": "embalse" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-65.77, -27.64],
+            [-65.76, -27.645],
+            [-65.75, -27.65],
+            [-65.745, -27.66],
+            [-65.75, -27.67],
+            [-65.76, -27.67],
+            [-65.77, -27.665],
+            [-65.775, -27.655],
+            [-65.77, -27.64]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Colorado", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.48, -26.7],
+          [-65.44, -26.72],
+          [-65.4, -26.74],
+          [-65.36, -26.75],
+          [-65.32, -26.76],
+          [-65.28, -26.77],
+          [-65.25, -26.78]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "nombre": "Río Choromoro", "tipo": "río secundario" },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-65.5, -26.55],
+          [-65.46, -26.56],
+          [-65.42, -26.57],
+          [-65.38, -26.58],
+          [-65.36, -26.58]
+        ]
+      }
+    }
+  ]
+}

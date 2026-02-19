@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: sif-tuc-db
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: sif_tuc
+      POSTGRES_USER: sif_admin
+      POSTGRES_PASSWORD: sif_password_2026
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d
+
+volumes:
+  pgdata:
