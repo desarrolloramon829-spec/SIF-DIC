@@ -365,6 +365,24 @@ textarea {
   transition: border-color 0.2s;
 }
 
+.form-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  resize: vertical;
+  line-height: 1.5;
+  min-height: 72px;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
@@ -821,6 +839,24 @@ textarea {
   flex-shrink: 0;
 }
 
+.legend-square {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  border: 2px solid transparent;
+  flex-shrink: 0;
+}
+
+/* Triángulo CSS apuntando hacia arriba */
+.legend-triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 14px solid #ff9800;
+  flex-shrink: 0;
+}
+
 /* ========== Login Page ========== */
 .login-page {
   display: flex;
@@ -879,6 +915,16 @@ textarea {
 .popup-field {
   font-size: 12px;
   margin-bottom: 4px;
+}
+
+.popup-sintesis {
+  font-style: italic;
+  color: var(--gray-700);
+  border-left: 3px solid var(--primary-light);
+  padding-left: 6px;
+  margin-top: 4px;
+  margin-bottom: 6px;
+  line-height: 1.4;
 }
 
 /* ========== Scrollbar ========== */

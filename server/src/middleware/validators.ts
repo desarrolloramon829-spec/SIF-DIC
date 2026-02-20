@@ -23,8 +23,8 @@ export const hechoValidation = [
       'Carátula debe ser: rescate, fallecimiento_ahogamiento o hallazgo_cuerpo_nn'
     ),
   body('unidad_regional')
-    .isIn(['URN', 'URS', 'URE', 'URO'])
-    .withMessage('Unidad regional debe ser: URN, URS, URE o URO'),
+    .isIn(['URN', 'URS', 'URE', 'URO', 'URC'])
+    .withMessage('Unidad regional debe ser: URN, URS, URE, URO o URC'),
   body('jurisdiccion').notEmpty().trim().withMessage('Jurisdicción requerida'),
   body('lugar_del_hecho')
     .notEmpty()
@@ -44,6 +44,11 @@ export const hechoValidation = [
   body('edad')
     .isInt({ min: 0, max: 150 })
     .withMessage('Edad debe ser un número entre 0 y 150'),
+  body('sintesis')
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .isLength({ max: 2000 })
+    .withMessage('Síntesis debe ser texto de máximo 2000 caracteres'),
   body('punto_ingreso')
     .isObject()
     .withMessage('Punto de ingreso requerido (objeto con lat y lng)'),

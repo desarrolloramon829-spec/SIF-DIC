@@ -38,6 +38,7 @@ const initialForm: HechoFormData = {
   victima: '',
   sexo: 'masculino',
   edad: 0,
+  sintesis: '',
   punto_ingreso: null,
   punto_hallazgo: null,
   victimas_adicionales: [],
@@ -70,6 +71,7 @@ export default function HechoForm({
         victima: editHecho.victima,
         sexo: editHecho.sexo,
         edad: editHecho.edad,
+        sintesis: editHecho.sintesis || '',
         punto_ingreso: editHecho.punto_ingreso,
         punto_hallazgo: editHecho.punto_hallazgo,
         victimas_adicionales: editHecho.victimas_adicionales ?? [],
@@ -92,7 +94,9 @@ export default function HechoForm({
   }, [puntoHallazgo]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     if (name === 'unidad_regional') {
@@ -275,6 +279,19 @@ export default function HechoForm({
             onChange={handleChange}
             placeholder="Ej: Río Salí - Puente Lucas Córdoba"
             required
+          />
+        </div>
+
+        {/* Síntesis del hecho */}
+        <div className="form-group">
+          <label>Síntesis del Hecho</label>
+          <textarea
+            name="sintesis"
+            value={form.sintesis}
+            onChange={handleChange}
+            placeholder="Breve descripción de lo ocurrido..."
+            rows={3}
+            className="form-textarea"
           />
         </div>
 

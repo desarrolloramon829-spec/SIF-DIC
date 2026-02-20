@@ -28,6 +28,7 @@ export interface HechoFluvial {
   victima: string;
   sexo: Sexo;
   edad: number;
+  sintesis?: string;
   punto_ingreso: Coordenada;
   punto_hallazgo: Coordenada;
   victimas_adicionales?: VictimaAdicional[];
@@ -47,6 +48,7 @@ export interface HechoFormData {
   victima: string;
   sexo: Sexo;
   edad: number;
+  sintesis: string;
   punto_ingreso: Coordenada | null;
   punto_hallazgo: Coordenada | null;
   victimas_adicionales: VictimaAdicional[];

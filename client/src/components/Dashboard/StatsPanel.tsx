@@ -100,21 +100,15 @@ export default function StatsPanel({ stats, totalVisible }: StatsPanelProps) {
               </div>
               <div className="legend-item">
                 <span
-                  className="legend-circle"
-                  style={{
-                    backgroundColor: '#2196F3',
-                    border: '2px solid #1565C0',
-                  }}
+                  className="legend-square"
+                  style={{ backgroundColor: '#2196F3', borderColor: '#1565C0' }}
                 ></span>
                 Pto. Ingreso
               </div>
               <div className="legend-item">
                 <span
-                  className="legend-circle"
-                  style={{
-                    backgroundColor: '#EF5350',
-                    border: '2px solid #C62828',
-                  }}
+                  className="legend-triangle"
+                  style={{ borderBottomColor: '#FF9800' }}
                 ></span>
                 Pto. Hallazgo
               </div>

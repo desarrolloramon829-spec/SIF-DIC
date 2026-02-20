@@ -1,4 +1,5 @@
-import { useMapEvents, Popup, Polyline, CircleMarker } from 'react-leaflet';
+import { useMapEvents, Popup, Polyline, Marker } from 'react-leaflet';
+import L from 'leaflet';
 import type { HechoFluvial, Coordenada } from '../../types';
 import MarkerPopup from './MarkerPopup';
 
@@ -12,12 +13,53 @@ interface MapMarkersProps {
   onSelectHecho?: (hecho: HechoFluvial | null) => void;
 }
 
-// Colores por carátula
+// Colores por carátula (color de relleno)
 const CARATULA_COLORS: Record<string, string> = {
-  rescate: '#4CAF50', // Verde
-  fallecimiento_ahogamiento: '#F44336', // Rojo
-  hallazgo_cuerpo_nn: '#FF9800', // Naranja
+  rescate: '#4CAF50',
+  fallecimiento_ahogamiento: '#F44336',
+  hallazgo_cuerpo_nn: '#FF9800',
 };
+
+// Color de borde por tipo de punto
+const INGRESO_BORDER = '#1565C0'; // Azul
+const HALLAZGO_BORDER = '#E65100'; // Naranja oscuro
+
+/** Ícono cuadrado — Punto de Ingreso */
+function squareIcon(fillColor: string, selected: boolean): L.DivIcon {
+  const s = selected ? 22 : 16;
+  const sw = selected ? 3 : 2;
+  const r = 2;
+  return L.divIcon({
+    className: '',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}">
+      <rect x="${sw / 2}" y="${sw / 2}" width="${s - sw}" height="${s - sw}"
+        fill="${fillColor}" stroke="${INGRESO_BORDER}" stroke-width="${sw}" rx="${r}"/>
+    </svg>`,
+    iconSize: [s, s],
+    iconAnchor: [s / 2, s / 2],
+    popupAnchor: [0, -(s / 2 + 4)],
+  });
+}
+
+/** Ícono triángulo — Punto de Hallazgo */
+function triangleIcon(fillColor: string, selected: boolean): L.DivIcon {
+  const s = selected ? 24 : 18;
+  const sw = selected ? 3 : 2;
+  const half = s / 2;
+  // Triángulo con vértice arriba, base abajo
+  const pts = `${half},${sw} ${s - sw},${s - sw} ${sw},${s - sw}`;
+  return L.divIcon({
+    className: '',
+    html: `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}">
+      <polygon points="${pts}"
+        fill="${fillColor}" stroke="${HALLAZGO_BORDER}" stroke-width="${sw}"
+        stroke-linejoin="round"/>
+    </svg>`,
+    iconSize: [s, s],
+    iconAnchor: [half, s - sw],
+    popupAnchor: [0, -(s + 4)],
+  });
+}
 
 function MapClickHandler({
   onMapClick,
@@ -54,31 +96,21 @@ export default function MapMarkers({
 
       {/* Marcadores temporales durante la carga */}
       {tempIngreso && (
-        <CircleMarker
-          center={[tempIngreso.lat, tempIngreso.lng]}
-          radius={10}
-          pathOptions={{
-            color: '#1565C0',
-            fillColor: '#2196F3',
-            fillOpacity: 0.8,
-          }}
+        <Marker
+          position={[tempIngreso.lat, tempIngreso.lng]}
+          icon={squareIcon('#2196F3', false)}
         >
-          <Popup>📍 Punto de ingreso al agua (temporal)</Popup>
-        </CircleMarker>
+          <Popup>🟦 Punto de ingreso al agua (temporal)</Popup>
+        </Marker>
       )}
 
       {tempHallazgo && (
-        <CircleMarker
-          center={[tempHallazgo.lat, tempHallazgo.lng]}
-          radius={10}
-          pathOptions={{
-            color: '#C62828',
-            fillColor: '#EF5350',
-            fillOpacity: 0.8,
-          }}
+        <Marker
+          position={[tempHallazgo.lat, tempHallazgo.lng]}
+          icon={triangleIcon('#FF9800', false)}
         >
-          <Popup>📍 Punto de hallazgo/rescate (temporal)</Popup>
-        </CircleMarker>
+          <Popup>🔶 Punto de hallazgo/rescate (temporal)</Popup>
+        </Marker>
       )}
 
       {/* Línea temporal entre puntos */}
@@ -99,39 +131,27 @@ export default function MapMarkers({
 
         return (
           <div key={hecho.id}>
-            {/* Punto de ingreso */}
-            <CircleMarker
-              center={[hecho.punto_ingreso.lat, hecho.punto_ingreso.lng]}
-              radius={isSelected ? 10 : 7}
-              pathOptions={{
-                color: '#1565C0',
-                fillColor: color,
-                fillOpacity: isSelected ? 1 : 0.7,
-                weight: isSelected ? 3 : 2,
-              }}
+            {/* Punto de ingreso — cuadrado azul */}
+            <Marker
+              position={[hecho.punto_ingreso.lat, hecho.punto_ingreso.lng]}
+              icon={squareIcon(color, isSelected)}
               eventHandlers={{
                 click: () => onSelectHecho?.(isSelected ? null : hecho),
               }}
             >
               <MarkerPopup hecho={hecho} tipo="ingreso" />
-            </CircleMarker>
+            </Marker>
 
-            {/* Punto de hallazgo */}
-            <CircleMarker
-              center={[hecho.punto_hallazgo.lat, hecho.punto_hallazgo.lng]}
-              radius={isSelected ? 10 : 7}
-              pathOptions={{
-                color: '#C62828',
-                fillColor: color,
-                fillOpacity: isSelected ? 1 : 0.7,
-                weight: isSelected ? 3 : 2,
-              }}
+            {/* Punto de hallazgo — triángulo naranja */}
+            <Marker
+              position={[hecho.punto_hallazgo.lat, hecho.punto_hallazgo.lng]}
+              icon={triangleIcon(color, isSelected)}
               eventHandlers={{
                 click: () => onSelectHecho?.(isSelected ? null : hecho),
               }}
             >
               <MarkerPopup hecho={hecho} tipo="hallazgo" />
-            </CircleMarker>
+            </Marker>
 
             {/* Línea entre puntos */}
             <Polyline

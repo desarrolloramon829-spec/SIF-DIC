@@ -15,6 +15,7 @@ const formatHecho = (row: any) => ({
   victima: row.victima,
   sexo: row.sexo,
   edad: row.edad,
+  sintesis: row.sintesis || null,
   punto_ingreso: {
     lat: row.ingreso_lat,
     lng: row.ingreso_lng,
@@ -33,7 +34,7 @@ const SELECT_HECHOS = `
   SELECT 
     h.id, h.caratula, h.unidad_regional, h.jurisdiccion,
     h.lugar_del_hecho, h.fecha_del_hecho, h.fecha_del_habido,
-    h.victima, h.sexo, h.edad,
+    h.victima, h.sexo, h.edad, h.sintesis,
     ST_Y(h.punto_ingreso) as ingreso_lat,
     ST_X(h.punto_ingreso) as ingreso_lng,
     ST_Y(h.punto_hallazgo) as hallazgo_lat,
@@ -135,6 +136,7 @@ export const createHecho = async (
       victima,
       sexo,
       edad,
+      sintesis,
       punto_ingreso,
       punto_hallazgo,
     } = req.body;
@@ -142,13 +144,13 @@ export const createHecho = async (
     const result = await pool.query(
       `INSERT INTO hechos_fluviales (
         caratula, unidad_regional, jurisdiccion, lugar_del_hecho,
-        fecha_del_hecho, fecha_del_habido, victima, sexo, edad,
+        fecha_del_hecho, fecha_del_habido, victima, sexo, edad, sintesis,
         punto_ingreso, punto_hallazgo, usuario_carga_id
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9,
-        ST_SetSRID(ST_MakePoint($10, $11), 4326),
-        ST_SetSRID(ST_MakePoint($12, $13), 4326),
-        $14
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+        ST_SetSRID(ST_MakePoint($11, $12), 4326),
+        ST_SetSRID(ST_MakePoint($13, $14), 4326),
+        $15
       ) RETURNING id`,
       [
         caratula,
@@ -160,6 +162,7 @@ export const createHecho = async (
         victima,
         sexo,
         edad,
+        sintesis || null,
         punto_ingreso.lng,
         punto_ingreso.lat,
         punto_hallazgo.lng,
@@ -201,6 +204,7 @@ export const updateHecho = async (
       victima,
       sexo,
       edad,
+      sintesis,
       punto_ingreso,
       punto_hallazgo,
     } = req.body;
@@ -209,10 +213,10 @@ export const updateHecho = async (
       `UPDATE hechos_fluviales SET
         caratula = $1, unidad_regional = $2, jurisdiccion = $3,
         lugar_del_hecho = $4, fecha_del_hecho = $5, fecha_del_habido = $6,
-        victima = $7, sexo = $8, edad = $9,
-        punto_ingreso = ST_SetSRID(ST_MakePoint($10, $11), 4326),
-        punto_hallazgo = ST_SetSRID(ST_MakePoint($12, $13), 4326)
-      WHERE id = $14
+        victima = $7, sexo = $8, edad = $9, sintesis = $10,
+        punto_ingreso = ST_SetSRID(ST_MakePoint($11, $12), 4326),
+        punto_hallazgo = ST_SetSRID(ST_MakePoint($13, $14), 4326)
+      WHERE id = $15
       RETURNING id`,
       [
         caratula,
@@ -224,6 +228,7 @@ export const updateHecho = async (
         victima,
         sexo,
         edad,
+        sintesis || null,
         punto_ingreso.lng,
         punto_ingreso.lat,
         punto_hallazgo.lng,
