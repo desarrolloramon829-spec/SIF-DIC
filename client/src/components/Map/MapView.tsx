@@ -1,5 +1,4 @@
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import MapMarkers from './MapMarkers';
 import type { HechoFluvial, Coordenada } from '../../types';
 
@@ -26,15 +25,6 @@ export default function MapView({
   selectedHecho,
   onSelectHecho,
 }: MapViewProps) {
-  const [riosGeoJSON, setRiosGeoJSON] = useState<any>(null);
-
-  useEffect(() => {
-    fetch('/data/rios-tucuman.geojson')
-      .then((res) => res.json())
-      .then((data) => setRiosGeoJSON(data))
-      .catch(() => console.warn('No se pudo cargar GeoJSON de ríos'));
-  }, []);
-
   return (
     <MapContainer
       center={TUCUMAN_CENTER}
@@ -46,20 +36,6 @@ export default function MapView({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-
-      {/* Capa de ríos */}
-      {riosGeoJSON && (
-        <GeoJSON
-          data={riosGeoJSON}
-          style={() => ({
-            color: '#2196F3',
-            weight: 2,
-            opacity: 0.7,
-            fillColor: '#2196F3',
-            fillOpacity: 0.1,
-          })}
-        />
-      )}
 
       {/* Marcadores de hechos */}
       <MapMarkers
