@@ -3,9 +3,18 @@ export interface Coordenada {
   lng: number;
 }
 
-export type CaratulaTipo = 'rescate' | 'fallecimiento_ahogamiento' | 'hallazgo_cuerpo_nn';
-export type UnidadRegional = 'URN' | 'URS' | 'URE' | 'URO';
+export type CaratulaTipo =
+  | 'rescate'
+  | 'fallecimiento_ahogamiento'
+  | 'hallazgo_cuerpo_nn';
+export type UnidadRegional = 'URN' | 'URS' | 'URE' | 'URO' | 'URC';
 export type Sexo = 'masculino' | 'femenino';
+
+export interface VictimaAdicional {
+  nombre: string;
+  edad: number;
+  sexo: Sexo;
+}
 export type Rol = 'admin' | 'operador' | 'consulta';
 
 export interface HechoFluvial {
@@ -21,6 +30,7 @@ export interface HechoFluvial {
   edad: number;
   punto_ingreso: Coordenada;
   punto_hallazgo: Coordenada;
+  victimas_adicionales?: VictimaAdicional[];
   usuario_carga_id: number | null;
   usuario_carga_nombre: string | null;
   created_at: string;
@@ -39,6 +49,7 @@ export interface HechoFormData {
   edad: number;
   punto_ingreso: Coordenada | null;
   punto_hallazgo: Coordenada | null;
+  victimas_adicionales: VictimaAdicional[];
 }
 
 export interface Usuario {
@@ -83,4 +94,5 @@ export const UNIDAD_REGIONAL_LABELS: Record<UnidadRegional, string> = {
   URS: 'Unidad Regional Sur',
   URE: 'Unidad Regional Este',
   URO: 'Unidad Regional Oeste',
+  URC: 'Unidad Regional Capital',
 };

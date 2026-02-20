@@ -6,6 +6,7 @@ import type {
   CaratulaTipo,
   UnidadRegional,
   Sexo,
+  VictimaAdicional,
 } from '../../types';
 import { CARATULA_LABELS } from '../../types';
 import { hechosApi } from '../../services/api';
@@ -21,6 +22,12 @@ interface HechoFormProps {
   selectingPoint: 'ingreso' | 'hallazgo' | null;
 }
 
+const emptyVictima: VictimaAdicional = {
+  nombre: '',
+  edad: 0,
+  sexo: 'masculino',
+};
+
 const initialForm: HechoFormData = {
   caratula: 'rescate',
   unidad_regional: 'URN',
@@ -33,6 +40,7 @@ const initialForm: HechoFormData = {
   edad: 0,
   punto_ingreso: null,
   punto_hallazgo: null,
+  victimas_adicionales: [],
 };
 
 export default function HechoForm({
@@ -47,6 +55,8 @@ export default function HechoForm({
   const [form, setForm] = useState<HechoFormData>(initialForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCoordsIngreso, setShowCoordsIngreso] = useState(false);
+  const [showCoordsHallazgo, setShowCoordsHallazgo] = useState(false);
 
   useEffect(() => {
     if (editHecho) {
@@ -62,7 +72,10 @@ export default function HechoForm({
         edad: editHecho.edad,
         punto_ingreso: editHecho.punto_ingreso,
         punto_hallazgo: editHecho.punto_hallazgo,
+        victimas_adicionales: editHecho.victimas_adicionales ?? [],
       });
+      if (editHecho.punto_ingreso) setShowCoordsIngreso(true);
+      if (editHecho.punto_hallazgo) setShowCoordsHallazgo(true);
     }
   }, [editHecho]);
 
@@ -82,7 +95,6 @@ export default function HechoForm({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    // Al cambiar regional, resetear jurisdicción
     if (name === 'unidad_regional') {
       setForm(prev => ({
         ...prev,
@@ -97,12 +109,73 @@ export default function HechoForm({
     }));
   };
 
+  /* -------- Coordenadas manuales -------- */
+  const handleCoordChange = (
+    point: 'punto_ingreso' | 'punto_hallazgo',
+    axis: 'lat' | 'lng',
+    value: string
+  ) => {
+    const num = parseFloat(value);
+    setForm(prev => {
+      const current = prev[point] ?? { lat: 0, lng: 0 };
+      return {
+        ...prev,
+        [point]: { ...current, [axis]: isNaN(num) ? 0 : num },
+      };
+    });
+  };
+
+  /* -------- Víctimas adicionales -------- */
+  const addVictima = () => {
+    setForm(prev => ({
+      ...prev,
+      victimas_adicionales: [...prev.victimas_adicionales, { ...emptyVictima }],
+    }));
+  };
+
+  const removeVictima = (idx: number) => {
+    setForm(prev => ({
+      ...prev,
+      victimas_adicionales: prev.victimas_adicionales.filter(
+        (_, i) => i !== idx
+      ),
+    }));
+  };
+
+  const handleVictimaChange = (
+    idx: number,
+    field: keyof VictimaAdicional,
+    value: string
+  ) => {
+    setForm(prev => {
+      const updated = [...prev.victimas_adicionales];
+      if (field === 'edad') {
+        updated[idx] = { ...updated[idx], edad: parseInt(value) || 0 };
+      } else if (field === 'sexo') {
+        updated[idx] = { ...updated[idx], sexo: value as Sexo };
+      } else {
+        updated[idx] = { ...updated[idx], nombre: value };
+      }
+      return { ...prev, victimas_adicionales: updated };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!form.punto_ingreso || !form.punto_hallazgo) {
-      setError('Debe seleccionar ambos puntos en el mapa');
+      setError('Debe seleccionar o ingresar ambos puntos geográficos');
+      return;
+    }
+
+    if (
+      form.punto_ingreso.lat === 0 &&
+      form.punto_ingreso.lng === 0 &&
+      form.punto_hallazgo.lat === 0 &&
+      form.punto_hallazgo.lng === 0
+    ) {
+      setError('Las coordenadas no pueden ser todas 0');
       return;
     }
 
@@ -228,51 +301,130 @@ export default function HechoForm({
           </div>
         </div>
 
-        {/* Víctima */}
-        <div className="form-group">
-          <label>Víctima *</label>
-          <input
-            type="text"
-            name="victima"
-            value={form.victima}
-            onChange={handleChange}
-            placeholder="Nombre completo o N.N."
-            required
-          />
-        </div>
+        {/* ====== VÍCTIMA PRINCIPAL ====== */}
+        <div className="form-section">
+          <h3>Datos de la Víctima</h3>
 
-        {/* Sexo y Edad */}
-        <div className="form-row">
           <div className="form-group">
-            <label>Sexo *</label>
-            <select
-              name="sexo"
-              value={form.sexo}
-              onChange={handleChange}
-              required
-            >
-              <option value="masculino">Masculino</option>
-              <option value="femenino">Femenino</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Edad *</label>
+            <label>Nombre *</label>
             <input
-              type="number"
-              name="edad"
-              value={form.edad}
+              type="text"
+              name="victima"
+              value={form.victima}
               onChange={handleChange}
-              min={0}
-              max={150}
+              placeholder="Nombre completo o N.N."
               required
             />
           </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Sexo *</label>
+              <select
+                name="sexo"
+                value={form.sexo}
+                onChange={handleChange}
+                required
+              >
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Edad *</label>
+              <input
+                type="number"
+                name="edad"
+                value={form.edad}
+                onChange={handleChange}
+                min={0}
+                max={150}
+                required
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Puntos en mapa */}
+        {/* ====== VÍCTIMAS ADICIONALES ====== */}
+        <div className="form-section">
+          <div className="victimas-header">
+            <h3>Víctimas Adicionales</h3>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline btn-add-victima"
+              onClick={addVictima}
+            >
+              + Agregar víctima
+            </button>
+          </div>
+
+          {form.victimas_adicionales.length === 0 && (
+            <p className="victimas-empty">
+              No hay víctimas adicionales. Presioná el botón para agregar más.
+            </p>
+          )}
+
+          {form.victimas_adicionales.map((v, idx) => (
+            <div key={idx} className="victima-card">
+              <div className="victima-card-header">
+                <span className="victima-card-title">Víctima {idx + 2}</span>
+                <button
+                  type="button"
+                  className="btn btn-icon btn-remove-victima"
+                  onClick={() => removeVictima(idx)}
+                  title="Eliminar víctima"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="form-group">
+                <label>Nombre</label>
+                <input
+                  type="text"
+                  value={v.nombre}
+                  onChange={e =>
+                    handleVictimaChange(idx, 'nombre', e.target.value)
+                  }
+                  placeholder="Nombre completo o N.N."
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Sexo</label>
+                  <select
+                    value={v.sexo}
+                    onChange={e =>
+                      handleVictimaChange(idx, 'sexo', e.target.value)
+                    }
+                  >
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Edad</label>
+                  <input
+                    type="number"
+                    value={v.edad}
+                    onChange={e =>
+                      handleVictimaChange(idx, 'edad', e.target.value)
+                    }
+                    min={0}
+                    max={150}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ====== PUNTOS EN MAPA + COORDENADAS ====== */}
         <div className="form-section">
           <h3>Puntos de Referencia en Mapa</h3>
 
+          {/* Punto de Ingreso */}
           <div className="form-group">
             <label>Punto de Ingreso al Agua *</label>
             <div className="point-selector">
@@ -285,15 +437,68 @@ export default function HechoForm({
                   ? '🔵 Hacé clic en el mapa...'
                   : '📍 Seleccionar en mapa'}
               </button>
-              {form.punto_ingreso && (
+              <button
+                type="button"
+                className={`btn btn-sm ${showCoordsIngreso ? 'btn-outline' : 'btn-outline'}`}
+                onClick={() => {
+                  setShowCoordsIngreso(prev => !prev);
+                  if (!form.punto_ingreso) {
+                    setForm(p => ({ ...p, punto_ingreso: { lat: 0, lng: 0 } }));
+                  }
+                }}
+                title="Ingresar coordenadas manualmente"
+              >
+                ⌨ Coordenadas
+              </button>
+              {form.punto_ingreso && !showCoordsIngreso && (
                 <span className="point-coords">
                   {form.punto_ingreso.lat.toFixed(5)},{' '}
                   {form.punto_ingreso.lng.toFixed(5)}
                 </span>
               )}
             </div>
+
+            {showCoordsIngreso && (
+              <div className="coords-inputs">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Latitud</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={form.punto_ingreso?.lat ?? ''}
+                      onChange={e =>
+                        handleCoordChange(
+                          'punto_ingreso',
+                          'lat',
+                          e.target.value
+                        )
+                      }
+                      placeholder="Ej: -26.8241"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Longitud</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={form.punto_ingreso?.lng ?? ''}
+                      onChange={e =>
+                        handleCoordChange(
+                          'punto_ingreso',
+                          'lng',
+                          e.target.value
+                        )
+                      }
+                      placeholder="Ej: -65.2226"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
+          {/* Punto de Hallazgo */}
           <div className="form-group">
             <label>Punto de Hallazgo/Rescate *</label>
             <div className="point-selector">
@@ -306,13 +511,68 @@ export default function HechoForm({
                   ? '🔴 Hacé clic en el mapa...'
                   : '📍 Seleccionar en mapa'}
               </button>
-              {form.punto_hallazgo && (
+              <button
+                type="button"
+                className={`btn btn-sm ${showCoordsHallazgo ? 'btn-outline' : 'btn-outline'}`}
+                onClick={() => {
+                  setShowCoordsHallazgo(prev => !prev);
+                  if (!form.punto_hallazgo) {
+                    setForm(p => ({
+                      ...p,
+                      punto_hallazgo: { lat: 0, lng: 0 },
+                    }));
+                  }
+                }}
+                title="Ingresar coordenadas manualmente"
+              >
+                ⌨ Coordenadas
+              </button>
+              {form.punto_hallazgo && !showCoordsHallazgo && (
                 <span className="point-coords">
                   {form.punto_hallazgo.lat.toFixed(5)},{' '}
                   {form.punto_hallazgo.lng.toFixed(5)}
                 </span>
               )}
             </div>
+
+            {showCoordsHallazgo && (
+              <div className="coords-inputs">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Latitud</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={form.punto_hallazgo?.lat ?? ''}
+                      onChange={e =>
+                        handleCoordChange(
+                          'punto_hallazgo',
+                          'lat',
+                          e.target.value
+                        )
+                      }
+                      placeholder="Ej: -26.8300"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Longitud</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={form.punto_hallazgo?.lng ?? ''}
+                      onChange={e =>
+                        handleCoordChange(
+                          'punto_hallazgo',
+                          'lng',
+                          e.target.value
+                        )
+                      }
+                      placeholder="Ej: -65.2100"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

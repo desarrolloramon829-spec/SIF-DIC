@@ -171,6 +171,8 @@ textarea {
 .map-main {
   flex: 1;
   position: relative;
+  min-width: 0;
+  height: 100%;
 }
 
 .map-container {
@@ -201,6 +203,74 @@ textarea {
   50% {
     opacity: 0.8;
   }
+}
+
+/* ========== Map Layer Control ========== */
+.map-layer-control {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.map-layer-btn {
+  background: var(--white);
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s;
+  color: var(--dark);
+}
+
+.map-layer-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.map-layer-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--white);
+}
+
+.map-layer-legend {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-size: 12px;
+}
+
+.map-layer-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+}
+
+.map-layer-legend-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  display: inline-block;
+  opacity: 0.85;
+}
+
+.juris-tooltip {
+  font-size: 12px;
+  font-weight: 500;
 }
 
 /* ========== Detail Card ========== */
@@ -336,7 +406,7 @@ textarea {
 .point-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -347,6 +417,100 @@ textarea {
   padding: 4px 8px;
   border-radius: 4px;
   font-family: monospace;
+}
+
+/* ========== Coords Manual Input ========== */
+.coords-inputs {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--gray-100);
+  border-radius: 6px;
+  border: 1px dashed var(--gray-300);
+}
+
+.coords-inputs .form-group {
+  margin-bottom: 8px;
+}
+
+.coords-inputs .form-row {
+  gap: 8px;
+}
+
+/* ========== Víctimas Adicionales ========== */
+.victimas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.victimas-header h3 {
+  margin: 0;
+}
+
+.btn-add-victima {
+  white-space: nowrap;
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  font-weight: 600;
+}
+
+.btn-add-victima:hover {
+  background: var(--primary) !important;
+  color: var(--white) !important;
+}
+
+.victimas-empty {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-style: italic;
+  padding: 6px 0;
+}
+
+.victima-card {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.victima-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.victima-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  letter-spacing: 0.5px;
+}
+
+.btn-remove-victima {
+  font-size: 14px !important;
+  color: var(--danger) !important;
+  padding: 2px !important;
+}
+
+.btn-remove-victima:hover {
+  color: #b71c1c !important;
+}
+
+.victima-card .form-group {
+  margin-bottom: 10px;
+}
+
+.victima-card .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.victima-card .form-row {
+  gap: 8px;
 }
 
 /* ========== Buttons ========== */
