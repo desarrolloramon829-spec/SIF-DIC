@@ -9,6 +9,7 @@ import type {
 } from '../../types';
 import { CARATULA_LABELS } from '../../types';
 import { hechosApi } from '../../services/api';
+import { COMISARIAS_POR_REGIONAL } from '../../constants/comisarias';
 
 interface HechoFormProps {
   onClose: () => void;
@@ -81,6 +82,15 @@ export default function HechoForm({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    // Al cambiar regional, resetear jurisdicción
+    if (name === 'unidad_regional') {
+      setForm(prev => ({
+        ...prev,
+        unidad_regional: value as UnidadRegional,
+        jurisdiccion: '',
+      }));
+      return;
+    }
     setForm(prev => ({
       ...prev,
       [name]: name === 'edad' ? parseInt(value) || 0 : value,
@@ -160,20 +170,26 @@ export default function HechoForm({
             <option value="URS">URS — Unidad Regional Sur</option>
             <option value="URE">URE — Unidad Regional Este</option>
             <option value="URO">URO — Unidad Regional Oeste</option>
+            <option value="URC">URC — Unidad Regional Capital</option>
           </select>
         </div>
 
         {/* Jurisdicción */}
         <div className="form-group">
           <label>Jurisdicción *</label>
-          <input
-            type="text"
+          <select
             name="jurisdiccion"
             value={form.jurisdiccion}
             onChange={handleChange}
-            placeholder="Ej: Comisaría 1ra Capital"
             required
-          />
+          >
+            <option value="">Seleccionar comisaría...</option>
+            {(COMISARIAS_POR_REGIONAL[form.unidad_regional] ?? []).map(c => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Lugar del hecho */}
