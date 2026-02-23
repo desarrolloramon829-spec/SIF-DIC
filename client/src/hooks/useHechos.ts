@@ -9,27 +9,33 @@ export function useHechos() {
   const [error, setError] = useState<string | null>(null);
   const [filtros, setFiltros] = useState<FiltrosHechos>({});
 
-  const fetchHechos = useCallback(async (f?: FiltrosHechos) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await hechosApi.getAll(f || filtros);
-      setHechos(data);
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Error al cargar hechos');
-    } finally {
-      setLoading(false);
-    }
-  }, [filtros]);
+  const fetchHechos = useCallback(
+    async (f?: FiltrosHechos) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await hechosApi.getAll(f || filtros);
+        setHechos(data);
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Error al cargar hechos');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filtros]
+  );
 
-  const fetchStats = useCallback(async () => {
-    try {
-      const data = await hechosApi.getStats();
-      setStats(data);
-    } catch (err: any) {
-      console.error('Error al cargar estadísticas:', err);
-    }
-  }, []);
+  const fetchStats = useCallback(
+    async (f?: FiltrosHechos) => {
+      try {
+        const data = await hechosApi.getStats(f ?? filtros);
+        setStats(data);
+      } catch (err: any) {
+        console.error('Error al cargar estadísticas:', err);
+      }
+    },
+    [filtros]
+  );
 
   useEffect(() => {
     fetchHechos();
@@ -39,6 +45,7 @@ export function useHechos() {
   const applyFiltros = (newFiltros: FiltrosHechos) => {
     setFiltros(newFiltros);
     fetchHechos(newFiltros);
+    fetchStats(newFiltros);
   };
 
   const refresh = () => {

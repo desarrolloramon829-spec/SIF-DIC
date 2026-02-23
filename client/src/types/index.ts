@@ -74,6 +74,9 @@ export interface Stats {
   por_unidad_regional: { unidad_regional: string; cantidad: string }[];
   por_mes: { mes: string; cantidad: string }[];
   por_sexo: { sexo: string; cantidad: string }[];
+  por_edad: { rango: string; cantidad: string }[];
+  por_jurisdiccion: { jurisdiccion: string; cantidad: string }[];
+  por_dia_semana: { dia_num: number; dia: string; cantidad: string }[];
 }
 
 export interface FiltrosHechos {

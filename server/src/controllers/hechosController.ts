@@ -273,18 +273,59 @@ export const deleteHecho = async (
   }
 };
 
-export const getStats = async (_req: Request, res: Response): Promise<void> => {
+// Helper para construir WHERE clause con filtros
+const buildWhereClause = (
+  query: any
+): { where: string; params: any[]; nextIdx: number } => {
+  const { caratula, unidad_regional, jurisdiccion, fecha_desde, fecha_hasta } =
+    query;
+  const conditions: string[] = [];
+  const params: any[] = [];
+  let paramIndex = 1;
+
+  if (caratula) {
+    conditions.push(`caratula = $${paramIndex++}`);
+    params.push(caratula);
+  }
+  if (unidad_regional) {
+    conditions.push(`unidad_regional = $${paramIndex++}`);
+    params.push(unidad_regional);
+  }
+  if (jurisdiccion) {
+    conditions.push(`jurisdiccion ILIKE $${paramIndex++}`);
+    params.push(`%${jurisdiccion}%`);
+  }
+  if (fecha_desde) {
+    conditions.push(`fecha_del_hecho >= $${paramIndex++}`);
+    params.push(fecha_desde);
+  }
+  if (fecha_hasta) {
+    conditions.push(`fecha_del_hecho <= $${paramIndex++}`);
+    params.push(fecha_hasta);
+  }
+
+  const where =
+    conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+  return { where, params, nextIdx: paramIndex };
+};
+
+export const getStats = async (req: Request, res: Response): Promise<void> => {
   try {
+    const { where, params } = buildWhereClause(req.query);
+
     const totalResult = await pool.query(
-      'SELECT COUNT(*) as total FROM hechos_fluviales'
+      `SELECT COUNT(*) as total FROM hechos_fluviales ${where}`,
+      params
     );
 
     const porCaratula = await pool.query(
-      'SELECT caratula, COUNT(*) as cantidad FROM hechos_fluviales GROUP BY caratula ORDER BY cantidad DESC'
+      `SELECT caratula, COUNT(*) as cantidad FROM hechos_fluviales ${where} GROUP BY caratula ORDER BY cantidad DESC`,
+      params
     );
 
     const porUnidadRegional = await pool.query(
-      'SELECT unidad_regional, COUNT(*) as cantidad FROM hechos_fluviales GROUP BY unidad_regional ORDER BY cantidad DESC'
+      `SELECT unidad_regional, COUNT(*) as cantidad FROM hechos_fluviales ${where} GROUP BY unidad_regional ORDER BY cantidad DESC`,
+      params
     );
 
     const porMes = await pool.query(
@@ -292,13 +333,51 @@ export const getStats = async (_req: Request, res: Response): Promise<void> => {
         TO_CHAR(fecha_del_hecho, 'YYYY-MM') as mes,
         COUNT(*) as cantidad
       FROM hechos_fluviales 
+      ${where}
       GROUP BY mes 
-      ORDER BY mes DESC 
-      LIMIT 12`
+      ORDER BY mes ASC 
+      LIMIT 24`,
+      params
     );
 
     const porSexo = await pool.query(
-      'SELECT sexo, COUNT(*) as cantidad FROM hechos_fluviales GROUP BY sexo'
+      `SELECT sexo, COUNT(*) as cantidad FROM hechos_fluviales ${where} GROUP BY sexo`,
+      params
+    );
+
+    const porEdad = await pool.query(
+      `SELECT
+        CASE
+          WHEN edad IS NULL THEN 'Sin dato'
+          WHEN edad BETWEEN 0 AND 12 THEN '0-12'
+          WHEN edad BETWEEN 13 AND 17 THEN '13-17'
+          WHEN edad BETWEEN 18 AND 30 THEN '18-30'
+          WHEN edad BETWEEN 31 AND 50 THEN '31-50'
+          ELSE '51+'
+        END as rango,
+        COUNT(*) as cantidad
+      FROM hechos_fluviales
+      ${where}
+      GROUP BY rango
+      ORDER BY rango`,
+      params
+    );
+
+    const porJurisdiccion = await pool.query(
+      `SELECT jurisdiccion, COUNT(*) as cantidad FROM hechos_fluviales ${where} GROUP BY jurisdiccion ORDER BY cantidad DESC LIMIT 10`,
+      params
+    );
+
+    const porDiaSemana = await pool.query(
+      `SELECT
+        EXTRACT(DOW FROM fecha_del_hecho)::int as dia_num,
+        TO_CHAR(fecha_del_hecho, 'Day') as dia,
+        COUNT(*) as cantidad
+      FROM hechos_fluviales
+      ${where}
+      GROUP BY dia_num, dia
+      ORDER BY dia_num`,
+      params
     );
 
     res.json({
@@ -307,9 +386,136 @@ export const getStats = async (_req: Request, res: Response): Promise<void> => {
       por_unidad_regional: porUnidadRegional.rows,
       por_mes: porMes.rows,
       por_sexo: porSexo.rows,
+      por_edad: porEdad.rows,
+      por_jurisdiccion: porJurisdiccion.rows,
+      por_dia_semana: porDiaSemana.rows,
     });
   } catch (error) {
     console.error('Error al obtener estadísticas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+export const exportHechos = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const {
+      caratula,
+      unidad_regional,
+      jurisdiccion,
+      fecha_desde,
+      fecha_hasta,
+    } = req.query;
+
+    let query = `
+      SELECT 
+        h.id,
+        h.caratula,
+        h.unidad_regional,
+        h.jurisdiccion,
+        h.lugar_del_hecho,
+        TO_CHAR(h.fecha_del_hecho, 'DD/MM/YYYY') as fecha_del_hecho,
+        TO_CHAR(h.fecha_del_habido, 'DD/MM/YYYY') as fecha_del_habido,
+        h.victima,
+        h.sexo,
+        h.edad,
+        h.sintesis,
+        ST_Y(h.punto_ingreso) as ingreso_lat,
+        ST_X(h.punto_ingreso) as ingreso_lng,
+        ST_Y(h.punto_hallazgo) as hallazgo_lat,
+        ST_X(h.punto_hallazgo) as hallazgo_lng,
+        u.nombre as usuario_carga,
+        TO_CHAR(h.created_at, 'DD/MM/YYYY HH24:MI') as created_at
+      FROM hechos_fluviales h
+      LEFT JOIN usuarios u ON h.usuario_carga_id = u.id
+    `;
+
+    const conditions: string[] = [];
+    const params: any[] = [];
+    let paramIndex = 1;
+
+    if (caratula) {
+      conditions.push(`h.caratula = $${paramIndex++}`);
+      params.push(caratula);
+    }
+    if (unidad_regional) {
+      conditions.push(`h.unidad_regional = $${paramIndex++}`);
+      params.push(unidad_regional);
+    }
+    if (jurisdiccion) {
+      conditions.push(`h.jurisdiccion ILIKE $${paramIndex++}`);
+      params.push(`%${jurisdiccion}%`);
+    }
+    if (fecha_desde) {
+      conditions.push(`h.fecha_del_hecho >= $${paramIndex++}`);
+      params.push(fecha_desde);
+    }
+    if (fecha_hasta) {
+      conditions.push(`h.fecha_del_hecho <= $${paramIndex++}`);
+      params.push(fecha_hasta);
+    }
+
+    if (conditions.length > 0) query += ' WHERE ' + conditions.join(' AND ');
+    query += ' ORDER BY h.fecha_del_hecho DESC';
+
+    const result = await pool.query(query, params);
+
+    const headers = [
+      'ID',
+      'Carátula',
+      'Unidad Regional',
+      'Jurisdicción',
+      'Lugar del Hecho',
+      'Fecha del Hecho',
+      'Fecha del Habido',
+      'Víctima',
+      'Sexo',
+      'Edad',
+      'Síntesis',
+      'Lat. Ingreso',
+      'Lng. Ingreso',
+      'Lat. Hallazgo',
+      'Lng. Hallazgo',
+      'Usuario Carga',
+      'Fecha Carga',
+    ];
+
+    const csvRows = [
+      headers.join(','),
+      ...result.rows.map(row =>
+        [
+          row.id,
+          `"${row.caratula}"`,
+          `"${row.unidad_regional}"`,
+          `"${(row.jurisdiccion || '').replace(/"/g, '""')}"`,
+          `"${(row.lugar_del_hecho || '').replace(/"/g, '""')}"`,
+          `"${row.fecha_del_hecho || ''}"`,
+          `"${row.fecha_del_habido || ''}"`,
+          `"${(row.victima || '').replace(/"/g, '""')}"`,
+          `"${row.sexo || ''}"`,
+          row.edad || '',
+          `"${(row.sintesis || '').replace(/"/g, '""')}"`,
+          row.ingreso_lat || '',
+          row.ingreso_lng || '',
+          row.hallazgo_lat || '',
+          row.hallazgo_lng || '',
+          `"${(row.usuario_carga || '').replace(/"/g, '""')}"`,
+          `"${row.created_at || ''}"`,
+        ].join(',')
+      ),
+    ];
+
+    const csv = '\uFEFF' + csvRows.join('\n'); // BOM para Excel en UTF-8
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="hechos_fluviales_${new Date().toISOString().slice(0, 10)}.csv"`
+    );
+    res.send(csv);
+  } catch (error) {
+    console.error('Error al exportar hechos:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

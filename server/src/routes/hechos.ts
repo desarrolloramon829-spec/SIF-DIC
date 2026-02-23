@@ -6,6 +6,7 @@ import {
   updateHecho,
   deleteHecho,
   getStats,
+  exportHechos,
 } from '../controllers/hechosController';
 import { authMiddleware, requireRole } from '../middleware/auth';
 import { hechoValidation } from '../middleware/validators';
@@ -15,8 +16,9 @@ const router = Router();
 // Todas las rutas requieren autenticación
 router.use(authMiddleware);
 
-// Estadísticas (antes de /:id para evitar conflicto)
+// Estadísticas y exportación (antes de /:id para evitar conflicto)
 router.get('/stats', getStats);
+router.get('/export', exportHechos);
 
 // Lectura — cualquier rol autenticado
 router.get('/', getHechos);

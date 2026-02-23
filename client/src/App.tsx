@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import MapPage from './pages/MapPage';
+import ReportsPage from './pages/ReportsPage';
 import './styles/index.css';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -33,6 +34,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <MapPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/informes"
+        element={
+          <PrivateRoute>
+            <ReportsPage />
           </PrivateRoute>
         }
       />

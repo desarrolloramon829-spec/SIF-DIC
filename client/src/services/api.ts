@@ -1,5 +1,12 @@
 import axios from 'axios';
-import type { HechoFluvial, HechoFormData, LoginResponse, Usuario, Stats, FiltrosHechos } from '../types';
+import type {
+  HechoFluvial,
+  HechoFormData,
+  LoginResponse,
+  Usuario,
+  Stats,
+  FiltrosHechos,
+} from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -7,7 +14,7 @@ const api = axios.create({
 });
 
 // Interceptor para agregar token
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(config => {
   const token = localStorage.getItem('sif_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -17,8 +24,8 @@ api.interceptors.request.use((config) => {
 
 // Interceptor para manejar 401
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
+  response => response,
+  error => {
     if (error.response?.status === 401) {
       localStorage.removeItem('sif_token');
       localStorage.removeItem('sif_user');
@@ -32,7 +39,10 @@ api.interceptors.response.use(
 
 export const authApi = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const { data } = await api.post<LoginResponse>('/auth/login', { email, password });
+    const { data } = await api.post<LoginResponse>('/auth/login', {
+      email,
+      password,
+    });
     return data;
   },
 
@@ -41,7 +51,12 @@ export const authApi = {
     return data;
   },
 
-  register: async (userData: { nombre: string; email: string; password: string; rol: string }): Promise<any> => {
+  register: async (userData: {
+    nombre: string;
+    email: string;
+    password: string;
+    rol: string;
+  }): Promise<any> => {
     const { data } = await api.post('/auth/register', userData);
     return data;
   },
@@ -90,9 +105,39 @@ export const hechosApi = {
     await api.delete(`/hechos/${id}`);
   },
 
-  getStats: async (): Promise<Stats> => {
-    const { data } = await api.get<Stats>('/hechos/stats');
+  getStats: async (filtros?: FiltrosHechos): Promise<Stats> => {
+    const params: Record<string, string> = {};
+    if (filtros) {
+      Object.entries(filtros).forEach(([key, value]) => {
+        if (value) params[key] = value;
+      });
+    }
+    const { data } = await api.get<Stats>('/hechos/stats', { params });
     return data;
+  },
+
+  exportCSV: async (filtros?: FiltrosHechos): Promise<void> => {
+    const params: Record<string, string> = {};
+    if (filtros) {
+      Object.entries(filtros).forEach(([key, value]) => {
+        if (value) params[key] = value;
+      });
+    }
+    const response = await api.get('/hechos/export', {
+      params,
+      responseType: 'blob',
+    });
+    const url = window.URL.createObjectURL(
+      new Blob([response.data], { type: 'text/csv;charset=utf-8;' })
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    const fecha = new Date().toISOString().slice(0, 10);
+    link.setAttribute('download', `hechos_fluviales_${fecha}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
   },
 };
 
