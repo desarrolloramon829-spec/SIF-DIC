@@ -90,7 +90,7 @@ export default function ReportsPage() {
       }
 
       const fecha = new Date().toISOString().slice(0, 10);
-      pdf.save(`informe_hechos_fluviales_${fecha}.pdf`);
+      pdf.save(`informe_intervenciones_sumersion_${fecha}.pdf`);
     } catch (e) {
       console.error(e);
       alert('Error al generar el PDF');
@@ -146,9 +146,10 @@ export default function ReportsPage() {
           <div className="report-header">
             <div className="report-header__logo">🌊</div>
             <div className="report-header__info">
-              <h1>Informe de Hechos Fluviales</h1>
+              <h1>Informe de Intervenciones por Sumersión</h1>
               <p>
-                Policía de Tucumán — Sistema de Información Fluvial (SIF-TUC)
+                Policía de Tucumán — Sistema de Información de Intervenciones
+                por Sumersión (SIIS-TUC)
               </p>
               <p className="report-header__meta">
                 Generado:{' '}

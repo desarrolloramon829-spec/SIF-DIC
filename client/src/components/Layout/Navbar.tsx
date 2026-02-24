@@ -9,8 +9,10 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-brand">
         <span className="navbar-logo">🌊</span>
-        <h1 className="navbar-title">SIF-TUC</h1>
-        <span className="navbar-subtitle">Sistema de Información Fluvial</span>
+        <h1 className="navbar-title">SIIS-TUC</h1>
+        <span className="navbar-subtitle">
+          Sistema de Información de Intervenciones por Sumersión
+        </span>
       </div>
 
       {user && (

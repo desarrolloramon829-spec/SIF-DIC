@@ -1,6 +1,6 @@
 /* ==============================================
-   SIF-TUC — Estilos Globales
-   Sistema de Información Fluvial - Policía de Tucumán
+   SIIS-TUC — Estilos Globales
+   Sistema de Información de Intervenciones por Sumersión - Policía de Tucumán
    ============================================== */
 
 /* ========== Reset & Base ========== */
@@ -393,10 +393,12 @@ textarea {
 .form-row {
   display: flex;
   gap: 12px;
+  align-items: flex-end;
 }
 
 .form-row .form-group {
   flex: 1;
+  margin-bottom: 0;
 }
 
 .form-section {

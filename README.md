@@ -1,6 +1,6 @@
-# SIF-TUC — Sistema de Información Fluvial de la Policía de Tucumán
+# SIIS-TUC — Sistema de Información de Intervenciones por Sumersión de la Policía de Tucumán
 
-Sistema web con mapa interactivo de la provincia de Tucumán para registrar y visualizar hechos fluviales policiales. Cada hecho carga **2 puntos de referencia** en el mapa: punto de ingreso al agua y punto de hallazgo/rescate.
+Sistema web con mapa interactivo de la provincia de Tucumán para registrar y visualizar intervenciones por sumersión policiales. Cada hecho carga **2 puntos de referencia** en el mapa: punto de ingreso al agua y punto de hallazgo/rescate.
 
 ## Stack Tecnológico
 
@@ -25,6 +25,9 @@ Sistema web con mapa interactivo de la provincia de Tucumán para registrar y vi
 - **Edad**
 - **Punto 1** (ingreso al agua) — coordenada en mapa
 - **Punto 2** (hallazgo/rescate) — coordenada en mapa
+- **Duración de la búsqueda** (ej: "4h 30min")
+- **Total de personal interviniente**
+- **Equipo logístico utilizado**
 
 ## Inicio rápido
 

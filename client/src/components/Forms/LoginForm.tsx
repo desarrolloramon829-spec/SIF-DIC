@@ -32,8 +32,8 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       <div className="login-card">
         <div className="login-header">
           <span className="login-logo">🌊</span>
-          <h1>SIF-TUC</h1>
-          <p>Sistema de Información Fluvial</p>
+          <h1>SIIS-TUC</h1>
+          <p>Sistema de Información de Intervenciones por Sumersión</p>
           <p className="login-subtitle">Policía de Tucumán</p>
         </div>
 

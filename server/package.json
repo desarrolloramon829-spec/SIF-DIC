@@ -1,7 +1,7 @@
 {
-  "name": "sif-tuc-server",
+  "name": "siis-tuc-server",
   "version": "1.0.0",
-  "description": "API REST - Sistema de Información Fluvial de Tucumán",
+  "description": "API REST - Sistema de Información de Intervenciones por Sumersión de Tucumán",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

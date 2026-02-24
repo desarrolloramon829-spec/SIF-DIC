@@ -49,6 +49,22 @@ export const hechoValidation = [
     .isString()
     .isLength({ max: 2000 })
     .withMessage('Síntesis debe ser texto de máximo 2000 caracteres'),
+  body('duracion_busqueda')
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .isLength({ max: 100 })
+    .withMessage(
+      'Duración de búsqueda debe ser texto de máximo 100 caracteres'
+    ),
+  body('total_personal')
+    .optional({ nullable: true })
+    .isInt({ min: 0 })
+    .withMessage('Total de personal debe ser un número entero positivo'),
+  body('equipo_logistico')
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .isLength({ max: 2000 })
+    .withMessage('Equipo logístico debe ser texto de máximo 2000 caracteres'),
   body('punto_ingreso')
     .isObject()
     .withMessage('Punto de ingreso requerido (objeto con lat y lng)'),

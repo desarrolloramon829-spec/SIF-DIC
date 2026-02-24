@@ -29,6 +29,9 @@ export interface HechoFluvial {
   sexo: Sexo;
   edad: number;
   sintesis?: string;
+  duracion_busqueda?: string | null;
+  total_personal?: number | null;
+  equipo_logistico?: string | null;
   punto_ingreso: Coordenada;
   punto_hallazgo: Coordenada;
   victimas_adicionales?: VictimaAdicional[];
@@ -49,6 +52,9 @@ export interface HechoFormData {
   sexo: Sexo;
   edad: number;
   sintesis: string;
+  duracion_busqueda: string;
+  total_personal: number | null;
+  equipo_logistico: string;
   punto_ingreso: Coordenada | null;
   punto_hallazgo: Coordenada | null;
   victimas_adicionales: VictimaAdicional[];

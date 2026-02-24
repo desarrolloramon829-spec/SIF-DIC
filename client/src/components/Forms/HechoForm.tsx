@@ -39,6 +39,9 @@ const initialForm: HechoFormData = {
   sexo: 'masculino',
   edad: 0,
   sintesis: '',
+  duracion_busqueda: '',
+  total_personal: null,
+  equipo_logistico: '',
   punto_ingreso: null,
   punto_hallazgo: null,
   victimas_adicionales: [],
@@ -72,6 +75,9 @@ export default function HechoForm({
         sexo: editHecho.sexo,
         edad: editHecho.edad,
         sintesis: editHecho.sintesis || '',
+        duracion_busqueda: editHecho.duracion_busqueda || '',
+        total_personal: editHecho.total_personal ?? null,
+        equipo_logistico: editHecho.equipo_logistico || '',
         punto_ingreso: editHecho.punto_ingreso,
         punto_hallazgo: editHecho.punto_hallazgo,
         victimas_adicionales: editHecho.victimas_adicionales ?? [],
@@ -109,7 +115,14 @@ export default function HechoForm({
     }
     setForm(prev => ({
       ...prev,
-      [name]: name === 'edad' ? parseInt(value) || 0 : value,
+      [name]:
+        name === 'edad'
+          ? parseInt(value) || 0
+          : name === 'total_personal'
+            ? value === ''
+              ? null
+              : parseInt(value) || 0
+            : value,
     }));
   };
 
@@ -206,7 +219,11 @@ export default function HechoForm({
   return (
     <div className="form-panel">
       <div className="form-header">
-        <h2>{editHecho ? 'Editar Hecho' : 'Nuevo Hecho Fluvial'}</h2>
+        <h2>
+          {editHecho
+            ? 'Editar Intervención'
+            : 'Nueva Intervención por Sumersión'}
+        </h2>
         <button className="btn btn-icon" onClick={onClose}>
           ✕
         </button>
@@ -293,6 +310,47 @@ export default function HechoForm({
             rows={3}
             className="form-textarea"
           />
+        </div>
+
+        {/* ====== DATOS OPERATIVOS ====== */}
+        <div className="form-section">
+          <h3>Datos Operativos</h3>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Duración de la Búsqueda</label>
+              <input
+                type="text"
+                name="duracion_busqueda"
+                value={form.duracion_busqueda}
+                onChange={handleChange}
+                placeholder="Ej: 4h 30min"
+              />
+            </div>
+            <div className="form-group">
+              <label>Total de Personal</label>
+              <input
+                type="number"
+                name="total_personal"
+                value={form.total_personal ?? ''}
+                onChange={handleChange}
+                min={0}
+                placeholder="Ej: 15"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Equipo Logístico Utilizado</label>
+            <textarea
+              name="equipo_logistico"
+              value={form.equipo_logistico}
+              onChange={handleChange}
+              placeholder="Ej: 2 lanchas de rescate, 1 dron, equipo de buceo..."
+              rows={3}
+              className="form-textarea"
+            />
+          </div>
         </div>
 
         {/* Fechas */}

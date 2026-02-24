@@ -133,7 +133,7 @@ export const hechosApi = {
     const link = document.createElement('a');
     link.href = url;
     const fecha = new Date().toISOString().slice(0, 10);
-    link.setAttribute('download', `hechos_fluviales_${fecha}.csv`);
+    link.setAttribute('download', `intervenciones_sumersion_${fecha}.csv`);
     document.body.appendChild(link);
     link.click();
     link.parentNode?.removeChild(link);
